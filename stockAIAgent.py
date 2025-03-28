@@ -145,7 +145,7 @@ def get_financials(ticker):
 
 # Streamlit UI
 def main():
-    st.title("AI Stock Investment Advisor")
+    st.title("Stock Investment Advisor")
     #company_name = st.text_input("Enter Company Name:")
     ticker = st.text_input("Enter Stock Ticker Symbol:")
     
