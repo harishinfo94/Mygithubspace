@@ -5,8 +5,6 @@ import numpy as np
 import requests
 from openai import OpenAI
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
-import plotly.express as px
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import time
@@ -347,59 +345,16 @@ def main():
                     
                     with tab1:
                         st.subheader("Stock Price History")
-                        # Use Plotly for interactive charts
-                        fig = go.Figure()
-                        fig.add_trace(go.Scatter(
-                            x=data["stock_price"].index,
-                            y=data["stock_price"].values,
-                            mode='lines',
-                            name=ticker,
-                            line=dict(color='royalblue', width=2)
-                        ))
-                        
-                        # Add competitor data if requested
-                        if compare_competitors and selected_competitors:
-                            for comp in selected_competitors:
-                                try:
-                                    comp_data = yf.Ticker(comp).history(period="5y")["Close"]
-                                    # Normalize to percentage change for fair comparison
-                                    comp_data_normalized = (comp_data / comp_data.iloc[0]) * 100
-                                    ticker_data_normalized = (data["stock_price"] / data["stock_price"].iloc[0]) * 100
-                                    
-                                    fig = go.Figure()
-                                    fig.add_trace(go.Scatter(
-                                        x=ticker_data_normalized.index,
-                                        y=ticker_data_normalized.values,
-                                        mode='lines',
-                                        name=ticker,
-                                        line=dict(color='royalblue', width=2)
-                                    ))
-                                    
-                                    fig.add_trace(go.Scatter(
-                                        x=comp_data_normalized.index,
-                                        y=comp_data_normalized.values,
-                                        mode='lines',
-                                        name=comp,
-                                        line=dict(width=1.5)
-                                    ))
-                                    
-                                    fig.update_layout(
-                                        title=f"{ticker} vs Competitors (Normalized %)",
-                                        xaxis_title="Date",
-                                        yaxis_title="% Change from Start",
-                                        legend_title="Stocks",
-                                        hovermode="x unified"
-                                    )
-                                except:
-                                    st.warning(f"Could not load data for {comp}")
-                        
-                        fig.update_layout(
-                            xaxis_title="Date",
-                            yaxis_title="Stock Price (USD)",
-                            hovermode="x unified",
-                            height=500
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
+                        # Use Matplotlib for charts
+                        plt.figure(figsize=(10, 6))
+                        plt.plot(data["stock_price"].index, data["stock_price"], label=ticker, color='royalblue', linewidth=2)
+                        plt.title(f"Stock Price History for {company_info['name']}")
+                        plt.xlabel("Date")
+                        plt.ylabel("Stock Price (USD)")
+                        plt.legend()
+                        plt.grid(True, linestyle='--', alpha=0.7)
+                        st.pyplot(plt.gcf())
+                        plt.clf()
                         
                     with tab2:
                         # Financial Analysis Tab
@@ -409,27 +364,22 @@ def main():
                         fin_tab1, fin_tab2, fin_tab3 = st.tabs(["Revenue & Profit", "Balance Sheet", "Cash Flow"])
                         
                         with fin_tab1:
-                            # Revenue and Profit metrics
-                            fig = go.Figure()
+                            # Revenue and Profit metrics using Matplotlib
+                            plt.figure(figsize=(10, 6))
                             metrics = ["Total Revenue", "Gross Profit", "Net Income"]
                             
                             for metric in metrics:
                                 if metric in data["scaled_data"].columns:
-                                    fig.add_trace(go.Scatter(
-                                        x=data["scaled_data"].index,
-                                        y=data["scaled_data"][metric],
-                                        mode='lines+markers',
-                                        name=metric
-                                    ))
+                                    plt.plot(data["scaled_data"].index, data["scaled_data"][metric], 
+                                             marker='o', label=metric)
                             
-                            fig.update_layout(
-                                title="Revenue and Profit Trends (% Change)",
-                                xaxis_title="Date",
-                                yaxis_title="Percentage Change",
-                                hovermode="x unified",
-                                height=500
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                            plt.title("Revenue and Profit Trends (% Change)")
+                            plt.xlabel("Date")
+                            plt.ylabel("Percentage Change")
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7)
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                             
                             # Display raw data in expandable section
                             with st.expander("View Raw Data"):
@@ -443,48 +393,38 @@ def main():
                                     st.dataframe(df_display)
                         
                         with fin_tab2:
-                            # Balance Sheet metrics
-                            fig = go.Figure()
+                            # Balance Sheet metrics using Matplotlib
+                            plt.figure(figsize=(10, 6))
                             metrics = ["Stockholders Equity", "Total Assets", "Total Liabilities"]
                             
                             for metric in metrics:
                                 if metric in data["scaled_data"].columns:
-                                    fig.add_trace(go.Scatter(
-                                        x=data["scaled_data"].index,
-                                        y=data["scaled_data"][metric],
-                                        mode='lines+markers',
-                                        name=metric
-                                    ))
+                                    plt.plot(data["scaled_data"].index, data["scaled_data"][metric], 
+                                             marker='o', label=metric)
                             
-                            fig.update_layout(
-                                title="Balance Sheet Metrics (% Change)",
-                                xaxis_title="Date",
-                                yaxis_title="Percentage Change",
-                                hovermode="x unified",
-                                height=500
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                            plt.title("Balance Sheet Metrics (% Change)")
+                            plt.xlabel("Date")
+                            plt.ylabel("Percentage Change")
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7)
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                         
                         with fin_tab3:
-                            # Cash Flow metrics
+                            # Cash Flow metrics using Matplotlib
                             if "Free Cash Flow" in data["scaled_data"].columns:
-                                fig = go.Figure()
+                                plt.figure(figsize=(10, 6))
                                 
-                                fig.add_trace(go.Scatter(
-                                    x=data["scaled_data"].index,
-                                    y=data["scaled_data"]["Free Cash Flow"],
-                                    mode='lines+markers',
-                                    name="Free Cash Flow"
-                                ))
+                                plt.plot(data["scaled_data"].index, data["scaled_data"]["Free Cash Flow"], 
+                                         marker='o', label="Free Cash Flow", color='green')
                                 
-                                fig.update_layout(
-                                    title="Free Cash Flow Trend (% Change)",
-                                    xaxis_title="Date",
-                                    yaxis_title="Percentage Change",
-                                    hovermode="x unified",
-                                    height=500
-                                )
-                                st.plotly_chart(fig, use_container_width=True)
+                                plt.title("Free Cash Flow Trend (% Change)")
+                                plt.xlabel("Date")
+                                plt.ylabel("Percentage Change")
+                                plt.legend()
+                                plt.grid(True, linestyle='--', alpha=0.7)
+                                st.pyplot(plt.gcf())
+                                plt.clf()
                             else:
                                 st.info("Free Cash Flow data not available for this stock")
                         
@@ -495,120 +435,61 @@ def main():
                             # Get technical indicators
                             tech_data = generate_technical_indicators(ticker)
                             
-                            # Price with Moving Averages
-                            fig = go.Figure()
+                            # Price with Moving Averages using Matplotlib
+                            plt.figure(figsize=(10, 6))
                             
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['Close'],
-                                mode='lines',
-                                name='Close Price',
-                                line=dict(color='blue', width=2)
-                            ))
+                            plt.plot(tech_data.index, tech_data['Close'], label='Close Price', color='blue', linewidth=2)
+                            plt.plot(tech_data.index, tech_data['MA50'], label='50-Day MA', color='orange', linewidth=1.5)
+                            plt.plot(tech_data.index, tech_data['MA200'], label='200-Day MA', color='red', linewidth=1.5)
                             
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['MA50'],
-                                mode='lines',
-                                name='50-Day MA',
-                                line=dict(color='orange', width=1.5)
-                            ))
+                            plt.title("Price and Moving Averages")
+                            plt.xlabel("Date")
+                            plt.ylabel("Price (USD)")
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7)
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                             
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['MA200'],
-                                mode='lines',
-                                name='200-Day MA',
-                                line=dict(color='red', width=1.5)
-                            ))
+                            # RSI Chart using Matplotlib
+                            plt.figure(figsize=(10, 5))
                             
-                            fig.update_layout(
-                                title="Price and Moving Averages",
-                                xaxis_title="Date",
-                                yaxis_title="Price (USD)",
-                                hovermode="x unified",
-                                height=400
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
-                            
-                            # RSI Chart
-                            fig = go.Figure()
-                            
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['RSI'],
-                                mode='lines',
-                                name='RSI',
-                                line=dict(color='purple', width=1.5)
-                            ))
+                            plt.plot(tech_data.index, tech_data['RSI'], color='purple', linewidth=1.5, label='RSI')
                             
                             # Add overbought and oversold lines
-                            fig.add_shape(
-                                type="line",
-                                x0=tech_data.index[0],
-                                y0=70,
-                                x1=tech_data.index[-1],
-                                y1=70,
-                                line=dict(color="red", width=1, dash="dash")
-                            )
+                            plt.axhline(y=70, color='r', linestyle='--', alpha=0.7)
+                            plt.axhline(y=30, color='g', linestyle='--', alpha=0.7)
                             
-                            fig.add_shape(
-                                type="line",
-                                x0=tech_data.index[0],
-                                y0=30,
-                                x1=tech_data.index[-1],
-                                y1=30,
-                                line=dict(color="green", width=1, dash="dash")
-                            )
+                            plt.title("Relative Strength Index (RSI)")
+                            plt.xlabel("Date")
+                            plt.ylabel("RSI")
+                            plt.ylim(0, 100)
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7)
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                             
-                            fig.update_layout(
-                                title="Relative Strength Index (RSI)",
-                                xaxis_title="Date",
-                                yaxis_title="RSI",
-                                yaxis=dict(range=[0, 100]),
-                                hovermode="x unified",
-                                height=300
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                            # MACD Chart using Matplotlib
+                            plt.figure(figsize=(10, 5))
                             
-                            # MACD Chart
-                            fig = go.Figure()
-                            
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['MACD'],
-                                mode='lines',
-                                name='MACD',
-                                line=dict(color='blue', width=1.5)
-                            ))
-                            
-                            fig.add_trace(go.Scatter(
-                                x=tech_data.index,
-                                y=tech_data['Signal'],
-                                mode='lines',
-                                name='Signal Line',
-                                line=dict(color='red', width=1.5)
-                            ))
+                            plt.plot(tech_data.index, tech_data['MACD'], color='blue', linewidth=1.5, label='MACD')
+                            plt.plot(tech_data.index, tech_data['Signal'], color='red', linewidth=1.5, label='Signal Line')
                             
                             # Add bar chart for MACD histogram
                             histogram = tech_data['MACD'] - tech_data['Signal']
-                            colors = ['green' if val >= 0 else 'red' for val in histogram]
                             
-                            fig.add_trace(go.Bar(
-                                x=tech_data.index,
-                                y=histogram,
-                                name='Histogram',
-                                marker_color=colors
-                            ))
+                            # Plot histogram as stems
+                            for i, (date, value) in enumerate(zip(tech_data.index, histogram)):
+                                if i % max(1, len(tech_data.index) // 100) == 0:  # Plot every Nth point to reduce clutter
+                                    color = 'green' if value >= 0 else 'red'
+                                    plt.bar(date, value, width=5, color=color, alpha=0.5)
                             
-                            fig.update_layout(
-                                title="Moving Average Convergence Divergence (MACD)",
-                                xaxis_title="Date",
-                                yaxis_title="Value",
-                                hovermode="x unified",
-                                height=300
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                            plt.title("Moving Average Convergence Divergence (MACD)")
+                            plt.xlabel("Date")
+                            plt.ylabel("Value")
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7)
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                         else:
                             st.info("Enable 'Show Technical Indicators' in the sidebar to view this section")
                     
@@ -619,10 +500,14 @@ def main():
                         growth_rates = calculate_growth_rates(data["financials"])
                         
                         if growth_rates:
-                            # Create a growth rate chart
-                            fig = go.Figure()
+                            # Create a growth rate chart using Matplotlib
+                            plt.figure(figsize=(10, 6))
                             
-                            for key, values in growth_rates.items():
+                            bar_width = 0.2
+                            bar_positions = {}
+                            num_metrics = len(growth_rates.keys())
+                            
+                            for i, (key, values) in enumerate(growth_rates.items()):
                                 # Get the metric name without "_growth"
                                 metric_name = key.replace("_growth", "")
                                 
@@ -630,21 +515,25 @@ def main():
                                 if isinstance(data["financials"][metric_name], pd.Series):
                                     indices = data["financials"][metric_name].index[1:]
                                     if len(indices) == len(values):
-                                        fig.add_trace(go.Bar(
-                                            x=indices,
-                                            y=values,
-                                            name=f"{metric_name} Growth %"
-                                        ))
+                                        # Calculate position for grouped bars
+                                        positions = [j - (num_metrics-1)*bar_width/2 + i*bar_width for j in range(len(indices))]
+                                        bar_positions[key] = positions
+                                        
+                                        plt.bar(positions, values, width=bar_width, label=f"{metric_name} Growth %")
                             
-                            fig.update_layout(
-                                title="Year-over-Year Growth Rates",
-                                xaxis_title="Date",
-                                yaxis_title="Growth Rate (%)",
-                                hovermode="x unified",
-                                height=500,
-                                barmode='group'
-                            )
-                            st.plotly_chart(fig, use_container_width=True)
+                            # Set x-ticks at the center of each group
+                            if bar_positions:
+                                first_key = list(bar_positions.keys())[0]
+                                plt.xticks([p + bar_width/2 for p in range(len(bar_positions[first_key]))], 
+                                          [d.strftime('%Y-%m') for d in indices])
+                            
+                            plt.title("Year-over-Year Growth Rates")
+                            plt.xlabel("Date")
+                            plt.ylabel("Growth Rate (%)")
+                            plt.legend()
+                            plt.grid(True, linestyle='--', alpha=0.7, axis='y')
+                            st.pyplot(plt.gcf())
+                            plt.clf()
                             
                             # Add a table with the growth rates
                             with st.expander("View Growth Rate Data"):
@@ -669,7 +558,7 @@ def main():
                                 with col3:
                                     st.metric("Max Drawdown", f"{perf_metrics.get('max_drawdown', 0)*100:.2f}%")
                                 
-                                # Add a chart showing the rolling volatility
+                                # Add a chart showing the rolling volatility using Matplotlib
                                 st.subheader("Rolling Volatility (30-Day Window)")
                                 
                                 # Calculate rolling volatility
@@ -677,22 +566,15 @@ def main():
                                     returns = data["stock_price"].pct_change().dropna()
                                     rolling_vol = returns.rolling(window=30).std() * (252 ** 0.5) * 100  # Annualized and in %
                                     
-                                    fig = go.Figure()
-                                    fig.add_trace(go.Scatter(
-                                        x=rolling_vol.index,
-                                        y=rolling_vol.values,
-                                        mode='lines',
-                                        name='30-Day Rolling Volatility',
-                                        line=dict(color='purple', width=1.5)
-                                    ))
+                                    plt.figure(figsize=(10, 5))
+                                    plt.plot(rolling_vol.index, rolling_vol, color='purple', linewidth=1.5)
                                     
-                                    fig.update_layout(
-                                        xaxis_title="Date",
-                                        yaxis_title="Annualized Volatility (%)",
-                                        hovermode="x unified",
-                                        height=300
-                                    )
-                                    st.plotly_chart(fig, use_container_width=True)
+                                    plt.title("30-Day Rolling Volatility")
+                                    plt.xlabel("Date")
+                                    plt.ylabel("Annualized Volatility (%)")
+                                    plt.grid(True, linestyle='--', alpha=0.7)
+                                    st.pyplot(plt.gcf())
+                                    plt.clf()
                                 else:
                                     st.info("Not enough data for rolling volatility calculation")
                         else:
