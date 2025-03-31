@@ -362,4 +362,80 @@ def portfolio_analysis():
         with st.spinner("Analyzing portfolio..."):
             portfolio_data = get_portfolio_data(tickers, period)
             if portfolio_data is None or portfolio_data.empty:
-                st.error("
+                st.error("Could not fetch portfolio data.")
+            else:
+                st.header("Portfolio Analysis")
+                tab1, tab2, tab3 = st.tabs(["Price Comparison", "Performance Statistics", "Correlation Analysis"])
+                
+                with tab1:
+                    st.subheader("Price Comparison")
+                    plot_data = portfolio_data / portfolio_data.iloc[0] * 100 if normalize_prices else portfolio_data
+                    fig = go.Figure()
+                    for column in plot_data.columns:
+                        fig.add_trace(go.Scatter(x=plot_data.index, y=plot_data[column], name=column))
+                    y_title = "Normalized Price (%)" if normalize_prices else "Price (USD)"
+                    fig.update_layout(title="Portfolio Price Comparison", xaxis_title="Date", yaxis_title=y_title)
+                    st.plotly_chart(fig, use_container_width=True)
+                    buffer = io.BytesIO()
+                    fig.write_image(buffer, format="png")
+                    st.download_button("Download Chart", buffer.getvalue(), "portfolio_price.png", "image/png")
+                    csv = portfolio_data.to_csv()
+                    st.download_button("Download Data", csv, "portfolio_data.csv", "text/csv")
+                
+                with tab2:
+                    if show_statistics:
+                        st.subheader("Performance Statistics")
+                        metrics = {}
+                        for column in portfolio_data.columns:
+                            stock_data = portfolio_data[column]
+                            daily_returns = stock_data.pct_change().dropna()
+                            if len(daily_returns) < 5:
+                                continue
+                            total_return = (stock_data.iloc[-1] / stock_data.iloc[0] - 1) * 100
+                            annualized_return = daily_returns.mean() * 252 * 100
+                            volatility = daily_returns.std() * np.sqrt(252) * 100
+                            sharpe_ratio = annualized_return / volatility if volatility != 0 else 0
+                            cum_returns = (1 + daily_returns).cumprod()
+                            running_max = cum_returns.cummax()
+                            drawdown = (cum_returns / running_max) - 1
+                            max_drawdown = drawdown.min() * 100
+                            metrics[column] = {
+                                "Total Return (%)": total_return,
+                                "Annual Return (%)": annualized_return,
+                                "Volatility (%)": volatility,
+                                "Sharpe Ratio": sharpe_ratio,
+                                "Max Drawdown (%)": max_drawdown
+                            }
+                        metrics_df = pd.DataFrame(metrics).T
+                        st.dataframe(metrics_df)
+                        fig = go.Figure()
+                        for ticker in metrics_df.index:
+                            fig.add_trace(go.Scatter(x=[metrics_df.loc[ticker, "Volatility (%)"]], y=[metrics_df.loc[ticker, "Annual Return (%)"]], mode="markers+text", name=ticker, text=[ticker], textposition="top center"))
+                        fig.update_layout(title="Risk/Return Profile", xaxis_title="Volatility (Risk) %", yaxis_title="Annual Return %")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), "portfolio_risk_return.png", "image/png")
+                        csv = metrics_df.to_csv()
+                        st.download_button("Download Data", csv, "portfolio_stats.csv", "text/csv")
+                
+                with tab3:
+                    if show_correlation:
+                        st.subheader("Correlation Analysis")
+                        returns = portfolio_data.pct_change().dropna()
+                        if len(returns) < 2:
+                            st.warning("Not enough data to calculate correlations.")
+                        else:
+                            correlation = returns.corr()
+                            st.dataframe(correlation.style.background_gradient(cmap='coolwarm'))
+                            fig = go.Figure(data=go.Heatmap(z=correlation.values, x=correlation.columns, y=correlation.index, colorscale='RdBu', zmin=-1, zmax=1, text=correlation.values.round(2), texttemplate="%{text}"))
+                            fig.update_layout(title="Return Correlation Heatmap", width=600, height=600)
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), "portfolio_correlation.png", "image/png")
+                            csv = correlation.to_csv()
+                            st.download_button("Download Data", csv, "portfolio_correlation.csv", "text/csv")
+
+if __name__ == "__main__":
+    main()
