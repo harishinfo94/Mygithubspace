@@ -313,110 +313,6 @@ def single_stock_analysis():
                                     csv_data = scale_ticker[available_metrics].to_csv()
                                     st.download_button("Download Data", csv_data, f"{ticker}_revenue_profit.csv", "text/csv")
                                 except Exception as e:
-                                    st.warning(f"Could not generate downloadable content: {str(e)}")
-                            else:
-                                st.warning("No revenue and profit data available")
-                        
-                        with fin_tab2:
-                            available_metrics = [m for m in ["EBIT", "EBITDA"] if m in scale_ticker.columns]
-                            if available_metrics:
-                                fig = go.Figure()
-                                for metric in available_metrics:
-                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
-                                fig.update_layout(title="EBIT and EBITDA Trends", xaxis_title="Date", yaxis_title="Percentage Change")
-                                st.plotly_chart(fig, use_container_width=True)
-                                
-                                try:
-                                    buffer = io.BytesIO()
-                                    fig.write_image(buffer, format="png")
-                                    buffer.seek(0)
-                                    st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_ebit_ebitda.png", "image/png")
-                                except Exception as e:
-                                    st.warning(f"Could not generate downloadable chart: {str(e)}")
-                            else:
-                                st.warning("No EBIT/EBITDA data available")
-                        
-                        with fin_tab3:
-                            available_metrics = [m for m in ["Stockholders Equity", "MarketCap"] if m in scale_ticker.columns]
-                            if available_metrics:
-                                fig = go.Figure()
-                                for metric in available_metrics:
-                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
-                                fig.update_layout(title="Equity and Market Trends", xaxis_title="Date", yaxis_title="Percentage Change")
-                                st.plotly_chart(fig, use_container_width=True)
-                                
-                                try:
-                                    buffer = io.BytesIO()
-                                    fig.write_image(buffer, format="png")
-                                    buffer.seek(0)
-                                    st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_equity_marketcap.png", "image/png")
-                                except Exception as e:
-                                    st.warning(f"Could not generate downloadable chart: {str(e)}")
-                                
-                                if "Company value perception" in financials and isinstance(financials["Company value perception"], list) and len(financials["Company value perception"]) > 0:
-                                    fig = go.Figure()
-                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers', line=dict(color="purple")))
-                                    fig.update_layout(title="Company Value Perception", xaxis_title="Date", yaxis_title="Market Cap / Equity Ratio")
-                                    st.plotly_chart(fig, use_container_width=True)
-                                    
-                                    try:
-                                        buffer = io.BytesIO()
-                                        fig.write_image(buffer, format="png")
-                                        buffer.seek(0)
-                                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_pb_ratio.png", "image/png")
-                                    except Exception as e:
-                                        st.warning(f"Could not generate downloadable chart: {str(e)}")
-                            else:
-                                st.warning("No equity/market cap data available")
-                    else:
-                        st.warning("No financial data available to analyze")
-                
-                with tab3:
-                    if show_technical and tech_data is not None and not tech_data.empty:
-                        st.subheader("Technical Indicators")
-                        if "Moving Averages" in tech_indicators:
-                            fig = go.Figure()
-                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Close'], name="Price"))
-                            if 'MA50' in tech_data.columns:
-                                fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA50'], name="MA50"))
-                            if 'MA200' in tech_data.columns:
-                                fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA200'], name="MA200"))
-                            fig.update_layout(title="Price and Moving Averages", xaxis_title="Date", yaxis_title="Price (USD)")
-                            st.plotly_chart(fig, use_container_width=True)
-                            
-                            try:
-                                buffer = io.BytesIO()
-                                fig.write_image(buffer, format="png")
-                                buffer.seek(0)
-                                st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_bollinger.png", "image/png")
-                            except Exception as e:
-                                st.warning(f"Could not generate downloadable chart: {str(e)}")
-                    else:
-                        st.warning("No technical indicator data available")
-                
-                with tab4:
-                    if show_ratios and ratios_df is not None and not ratios_df.empty:
-                        st.subheader("Financial Ratios")
-                        
-                        # P/E and P/B Ratios Chart
-                        has_pe = "P/E Ratio" in ratios_df.columns
-                        has_pb = "Company value perception" in financials and isinstance(financials["Company value perception"], list) and len(financials["Company value perception"]) > 0
-                        
-                        if has_pe or has_pb:
-                            fig = go.Figure()
-                            if has_pe:
-                                fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["P/E Ratio"], name="P/E Ratio", mode='lines+markers'))
-                            if has_pb:
-                                fig.add_trace(go.Scatter(x=ratios_df.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers'))
-                            fig.update_layout(title="Valuation Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
-                            st.plotly_chart(fig, use_container_width=True)
-                            
-                            try:
-                                buffer = io.BytesIO()
-                                fig.write_image(buffer, format="png")
-                                buffer.seek(0)
-                                st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_valuation_ratios.png", "image/png")
-                            except Exception as e:
                                 st.warning(f"Could not generate downloadable chart: {str(e)}")
                         
                         # ROE and Debt-to-Equity Chart
@@ -634,7 +530,81 @@ def portfolio_analysis():
                         st.warning("Need at least two stocks to calculate correlations.")
 
 if __name__ == "__main__":
-    main().write_image(buffer, format="png")
+    main() e:
+                                    st.warning(f"Could not generate downloadable content: {str(e)}")
+                            else:
+                                st.warning("No revenue and profit data available")
+                        
+                        with fin_tab2:
+                            available_metrics = [m for m in ["EBIT", "EBITDA"] if m in scale_ticker.columns]
+                            if available_metrics:
+                                fig = go.Figure()
+                                for metric in available_metrics:
+                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
+                                fig.update_layout(title="EBIT and EBITDA Trends", xaxis_title="Date", yaxis_title="Percentage Change")
+                                st.plotly_chart(fig, use_container_width=True)
+                                
+                                try:
+                                    buffer = io.BytesIO()
+                                    fig.write_image(buffer, format="png")
+                                    buffer.seek(0)
+                                    st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_ebit_ebitda.png", "image/png")
+                                except Exception as e:
+                                    st.warning(f"Could not generate downloadable chart: {str(e)}")
+                            else:
+                                st.warning("No EBIT/EBITDA data available")
+                        
+                        with fin_tab3:
+                            available_metrics = [m for m in ["Stockholders Equity", "MarketCap"] if m in scale_ticker.columns]
+                            if available_metrics:
+                                fig = go.Figure()
+                                for metric in available_metrics:
+                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
+                                fig.update_layout(title="Equity and Market Trends", xaxis_title="Date", yaxis_title="Percentage Change")
+                                st.plotly_chart(fig, use_container_width=True)
+                                
+                                try:
+                                    buffer = io.BytesIO()
+                                    fig.write_image(buffer, format="png")
+                                    buffer.seek(0)
+                                    st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_equity_marketcap.png", "image/png")
+                                except Exception as e:
+                                    st.warning(f"Could not generate downloadable chart: {str(e)}")
+                                
+                                if "Company value perception" in financials and isinstance(financials["Company value perception"], list) and len(financials["Company value perception"]) > 0:
+                                    fig = go.Figure()
+                                    fig.add_trace(go.Scatter(x=scale_ticker.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers', line=dict(color="purple")))
+                                    fig.update_layout(title="Company Value Perception", xaxis_title="Date", yaxis_title="Market Cap / Equity Ratio")
+                                    st.plotly_chart(fig, use_container_width=True)
+                                    
+                                    try:
+                                        buffer = io.BytesIO()
+                                        fig.write_image(buffer, format="png")
+                                        buffer.seek(0)
+                                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_pb_ratio.png", "image/png")
+                                    except Exception as e:
+                                        st.warning(f"Could not generate downloadable chart: {str(e)}")
+                            else:
+                                st.warning("No equity/market cap data available")
+                    else:
+                        st.warning("No financial data available to analyze")
+                
+                with tab3:
+                    if show_technical and tech_data is not None and not tech_data.empty:
+                        st.subheader("Technical Indicators")
+                        if "Moving Averages" in tech_indicators:
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Close'], name="Price"))
+                            if 'MA50' in tech_data.columns:
+                                fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA50'], name="MA50"))
+                            if 'MA200' in tech_data.columns:
+                                fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA200'], name="MA200"))
+                            fig.update_layout(title="Price and Moving Averages", xaxis_title="Date", yaxis_title="Price (USD)")
+                            st.plotly_chart(fig, use_container_width=True)
+                            
+                            try:
+                                buffer = io.BytesIO()
+                                fig.write_image(buffer, format="png")
                                 buffer.seek(0)
                                 st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_ma.png", "image/png")
                             except Exception as e:
@@ -686,4 +656,34 @@ if __name__ == "__main__":
                             
                             try:
                                 buffer = io.BytesIO()
-                                fig
+                                fig.write_image(buffer, format="png")
+                                buffer.seek(0)
+                                st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_bollinger.png", "image/png")
+                            except Exception as e:
+                                st.warning(f"Could not generate downloadable chart: {str(e)}")
+                    else:
+                        st.warning("No technical indicator data available")
+                
+                with tab4:
+                    if show_ratios and ratios_df is not None and not ratios_df.empty:
+                        st.subheader("Financial Ratios")
+                        
+                        # P/E and P/B Ratios Chart
+                        has_pe = "P/E Ratio" in ratios_df.columns
+                        has_pb = "Company value perception" in financials and isinstance(financials["Company value perception"], list) and len(financials["Company value perception"]) > 0
+                        
+                        if has_pe or has_pb:
+                            fig = go.Figure()
+                            if has_pe:
+                                fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["P/E Ratio"], name="P/E Ratio", mode='lines+markers'))
+                            if has_pb:
+                                fig.add_trace(go.Scatter(x=ratios_df.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers'))
+                            fig.update_layout(title="Valuation Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
+                            st.plotly_chart(fig, use_container_width=True)
+                            
+                            try:
+                                buffer = io.BytesIO()
+                                fig.write_image(buffer, format="png")
+                                buffer.seek(0)
+                                st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_valuation_ratios.png", "image/png")
+                            except Exception as
