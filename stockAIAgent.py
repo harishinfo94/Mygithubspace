@@ -279,6 +279,16 @@ def single_stock_analysis():
                         fig.update_layout(title=f"{time_period} Stock Price History", xaxis_title="Date", yaxis_title="Price (USD)")
                         st.plotly_chart(fig, use_container_width=True)
                         
+                        # Add explanations
+                        st.markdown("""
+                        **What this chart shows:** This chart displays the stock's price history over time. The line represents the closing price of the stock for each trading day.
+                        
+                        **How to interpret:** 
+                        - Upward trends suggest increasing investor confidence or positive market sentiment
+                        - Downward trends may indicate declining performance or negative market outlook
+                        - Look for patterns like consistent growth, cyclical behavior, or sudden changes that might correlate with company news or market events
+                        """)
+                        
                         # Generate and provide download for chart
                         try:
                             buffer = io.BytesIO()
@@ -304,6 +314,21 @@ def single_stock_analysis():
                                 fig.update_layout(title="Revenue and Profit Trends", xaxis_title="Date", yaxis_title="Percentage Change")
                                 st.plotly_chart(fig, use_container_width=True)
                                 
+                                # Add explanations
+                                st.markdown("""
+                                **What this chart shows:** This chart tracks the company's revenue, gross profit, and net income over time, showing their relative growth compared to their minimum values.
+                                
+                                **Key terms:**
+                                - **Total Revenue:** The total money the company earns from selling its products or services
+                                - **Gross Profit:** Revenue minus the direct costs of making products or providing services
+                                - **Net Income:** The final profit after all expenses, taxes, and costs are subtracted from revenue
+                                
+                                **How to interpret:** 
+                                - Growing revenue suggests the company is selling more products/services
+                                - Widening gap between revenue and net income might indicate increasing costs
+                                - Consistent growth across all metrics typically signals a healthy business
+                                """)
+                                
                                 try:
                                     buffer = io.BytesIO()
                                     fig.write_image(buffer, format="png")
@@ -326,6 +351,21 @@ def single_stock_analysis():
                                 fig.update_layout(title="EBIT and EBITDA Trends", xaxis_title="Date", yaxis_title="Percentage Change")
                                 st.plotly_chart(fig, use_container_width=True)
                                 
+                                # Add explanations
+                                st.markdown("""
+                                **What this chart shows:** This chart displays EBIT (Earnings Before Interest and Taxes) and EBITDA (Earnings Before Interest, Taxes, Depreciation, and Amortization) over time.
+                                
+                                **Key terms:**
+                                - **EBIT:** Profit before paying interest on debt and income taxes
+                                - **EBITDA:** Profit before interest, taxes, and accounting for depreciation and amortization of assets
+                                
+                                **How to interpret:** 
+                                - These metrics show a company's operational performance without the effects of capital structure, tax rates, or non-cash expenses
+                                - Growing EBIT/EBITDA indicates improving operational efficiency
+                                - EBITDA is often higher than EBIT since it adds back depreciation and amortization expenses
+                                - Investors use these to compare companies in the same industry regardless of their debt levels or tax situations
+                                """)
+                                
                                 try:
                                     buffer = io.BytesIO()
                                     fig.write_image(buffer, format="png")
@@ -345,6 +385,20 @@ def single_stock_analysis():
                                 fig.update_layout(title="Equity and Market Trends", xaxis_title="Date", yaxis_title="Percentage Change")
                                 st.plotly_chart(fig, use_container_width=True)
                                 
+                                # Add explanations
+                                st.markdown("""
+                                **What this chart shows:** This chart compares stockholders' equity (what the company is worth on paper) and market capitalization (what investors think the company is worth).
+                                
+                                **Key terms:**
+                                - **Stockholders' Equity:** The company's assets minus its liabilities (book value)
+                                - **Market Cap:** The total value of all outstanding shares (stock price × number of shares)
+                                
+                                **How to interpret:** 
+                                - When market cap grows faster than equity, investors are becoming more optimistic about future growth
+                                - When equity grows faster than market cap, the stock might be becoming undervalued
+                                - Large gaps between the two might indicate the market's expectation of future performance differs from current financial statements
+                                """)
+                                
                                 try:
                                     buffer = io.BytesIO()
                                     fig.write_image(buffer, format="png")
@@ -358,6 +412,20 @@ def single_stock_analysis():
                                     fig.add_trace(go.Scatter(x=scale_ticker.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers', line=dict(color="purple")))
                                     fig.update_layout(title="Company Value Perception", xaxis_title="Date", yaxis_title="Market Cap / Equity Ratio")
                                     st.plotly_chart(fig, use_container_width=True)
+                                    
+                                    # Add explanations
+                                    st.markdown("""
+                                    **What this chart shows:** The Price-to-Book (P/B) ratio, which compares the company's market value to its book value.
+                                    
+                                    **Key terms:**
+                                    - **P/B Ratio:** Market Cap divided by Stockholders' Equity
+                                    
+                                    **How to interpret:** 
+                                    - P/B ratio > 1: Investors value the company more than its accounting value (common for growth companies)
+                                    - P/B ratio < 1: The stock might be undervalued, or the company could have underlying problems
+                                    - Industry average: Different industries have different typical P/B ratios (tech companies often have higher P/B than manufacturing)
+                                    - Changes over time: An increasing P/B suggests growing investor confidence; decreasing suggests the opposite
+                                    """)
                                     
                                     try:
                                         buffer = io.BytesIO()
@@ -384,6 +452,23 @@ def single_stock_analysis():
                             fig.update_layout(title="Price and Moving Averages", xaxis_title="Date", yaxis_title="Price (USD)")
                             st.plotly_chart(fig, use_container_width=True)
                             
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** This chart displays the stock price with moving averages over different time periods.
+                            
+                            **Key terms:**
+                            - **Moving Average (MA):** The average price over a specified number of days
+                            - **MA50:** Average price over the last 50 trading days (about 2.5 months)
+                            - **MA200:** Average price over the last 200 trading days (about 10 months)
+                            
+                            **How to interpret:** 
+                            - Moving averages smooth out day-to-day price fluctuations to show the overall trend
+                            - When price crosses above MA50 or MA200, it may signal a bullish trend (prices rising)
+                            - When price crosses below MA50 or MA200, it may signal a bearish trend (prices falling)
+                            - When MA50 crosses above MA200 (Golden Cross), it's often considered a strong bullish signal
+                            - When MA50 crosses below MA200 (Death Cross), it's often considered a strong bearish signal
+                            """)
+                            
                             try:
                                 buffer = io.BytesIO()
                                 fig.write_image(buffer, format="png")
@@ -399,6 +484,22 @@ def single_stock_analysis():
                             fig.add_hline(y=30, line_dash="dash", line_color="green")
                             fig.update_layout(title="Relative Strength Index (RSI)", xaxis_title="Date", yaxis_title="RSI", yaxis_range=[0, 100])
                             st.plotly_chart(fig, use_container_width=True)
+                            
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** The Relative Strength Index (RSI), a momentum indicator that measures the speed and change of price movements.
+                            
+                            **Key terms:**
+                            - **RSI:** Oscillates between 0 and 100, showing overbought or oversold conditions
+                            - **Overbought (above 70):** The stock may be overvalued and due for a price correction
+                            - **Oversold (below 30):** The stock may be undervalued and due for a price recovery
+                            
+                            **How to interpret:** 
+                            - RSI above 70 (above red line): Stock might be overbought, suggesting a potential sell opportunity
+                            - RSI below 30 (below green line): Stock might be oversold, suggesting a potential buy opportunity
+                            - RSI trending upward or downward: Can indicate momentum even before price movements are obvious
+                            - Divergence between RSI and price: If price makes new highs but RSI doesn't, might signal a weakening trend
+                            """)
                             
                             try:
                                 buffer = io.BytesIO()
@@ -419,6 +520,23 @@ def single_stock_analysis():
                             fig.update_layout(height=600, title_text="MACD Analysis")
                             st.plotly_chart(fig, use_container_width=True)
                             
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** The Moving Average Convergence Divergence (MACD), a trend-following momentum indicator.
+                            
+                            **Key terms:**
+                            - **MACD Line:** The difference between the 12-day and 26-day exponential moving averages (blue line)
+                            - **Signal Line:** 9-day exponential moving average of the MACD line (red line)
+                            - **Histogram:** Difference between MACD line and signal line (green/red bars)
+                            
+                            **How to interpret:** 
+                            - MACD crossing above signal line: Bullish signal suggesting potential price increase
+                            - MACD crossing below signal line: Bearish signal suggesting potential price decrease
+                            - Histogram bars changing from red to green: Momentum shifting from negative to positive
+                            - Histogram bars changing from green to red: Momentum shifting from positive to negative
+                            - Divergence between MACD and price: If price makes new highs/lows but MACD doesn't, might signal a trend weakening
+                            """)
+                            
                             try:
                                 buffer = io.BytesIO()
                                 fig.write_image(buffer, format="png")
@@ -435,6 +553,24 @@ def single_stock_analysis():
                             fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Lower_Band'], name="Lower Band", line=dict(color="red", dash="dash")))
                             fig.update_layout(title="Bollinger Bands", xaxis_title="Date", yaxis_title="Price (USD)")
                             st.plotly_chart(fig, use_container_width=True)
+                            
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** Bollinger Bands, which measure price volatility and potential overbought or oversold conditions.
+                            
+                            **Key terms:**
+                            - **Middle Band (MA20):** 20-day moving average of closing prices (orange line)
+                            - **Upper Band:** Middle band plus two standard deviations (green dashed line)
+                            - **Lower Band:** Middle band minus two standard deviations (red dashed line)
+                            
+                            **How to interpret:** 
+                            - Price touching upper band: Potentially overbought condition (may reverse downward)
+                            - Price touching lower band: Potentially oversold condition (may reverse upward)
+                            - Bands narrowing: Low volatility, often occurs before major price movements
+                            - Bands widening: Increasing volatility, often during strong trends or market uncertainty
+                            - Price moving between bands: Normal trading conditions
+                            - "Band squeeze" followed by breakout: Often signals the beginning of a new trend
+                            """)
                             
                             try:
                                 buffer = io.BytesIO()
@@ -463,6 +599,28 @@ def single_stock_analysis():
                             fig.update_layout(title="Valuation Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
                             st.plotly_chart(fig, use_container_width=True)
                             
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** Key valuation ratios that help investors determine if a stock is fairly priced.
+                            
+                            **Key terms:**
+                            - **P/E Ratio (Price-to-Earnings):** Stock price divided by earnings per share
+                            - **P/B Ratio (Price-to-Book):** Market value divided by book value
+                            
+                            **How to interpret:** 
+                            - **P/E Ratio:**
+                              - Higher P/E: Investors expect higher growth or are willing to pay premium (often growth stocks)
+                              - Lower P/E: Could indicate undervaluation or problems with the company (often value stocks)
+                              - Industry comparison: Different industries have different typical P/E ranges
+                            
+                            - **P/B Ratio:**
+                              - P/B > 1: Market values company more than its assets minus liabilities
+                              - P/B < 1: Could be undervalued or have fundamental problems
+                              - Financial/asset-heavy companies often evaluated heavily on P/B ratio
+                            
+                            - Changes over time often more meaningful than absolute values
+                            """)
+                            
                             try:
                                 buffer = io.BytesIO()
                                 fig.write_image(buffer, format="png")
@@ -483,6 +641,28 @@ def single_stock_analysis():
                                 fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["Debt to Equity"], name="Debt to Equity", mode='lines+markers'))
                             fig.update_layout(title="Performance and Solvency Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
                             st.plotly_chart(fig, use_container_width=True)
+                            
+                            # Add explanations
+                            st.markdown("""
+                            **What this chart shows:** Performance and solvency ratios that measure profitability and financial health.
+                            
+                            **Key terms:**
+                            - **ROE (Return on Equity):** Net income divided by shareholders' equity, expressed as a percentage
+                            - **Debt to Equity:** Total debt divided by shareholders' equity
+                            
+                            **How to interpret:** 
+                            - **ROE (Return on Equity):**
+                              - Higher ROE: Company generates more profit from shareholder investments
+                              - 15-20% or higher: Generally considered good
+                              - Changes over time: Increasing ROE suggests improving efficiency
+                              - Industry comparison: Some industries naturally have higher/lower ROE
+                            
+                            - **Debt to Equity:**
+                              - Higher ratio: More debt relative to equity (higher risk but potentially higher returns)
+                              - Lower ratio: Less debt relative to equity (lower risk but potentially lower returns)
+                              - Ratio > 2.0: Often considered high debt load for many industries
+                              - Some industries (utilities, financial) typically operate with higher debt levels
+                            """)
                             
                             try:
                                 buffer = io.BytesIO()
@@ -551,6 +731,19 @@ def portfolio_analysis():
                     y_title = "Normalized Price (%)" if normalize_prices else "Price (USD)"
                     fig.update_layout(title="Portfolio Price Comparison", xaxis_title="Date", yaxis_title=y_title)
                     st.plotly_chart(fig, use_container_width=True)
+                    
+                    # Add explanations
+                    st.markdown("""
+                    **What this chart shows:** Price comparison of multiple stocks over time, allowing you to see relative performance.
+                    
+                    **How to interpret:** 
+                    - **Normalized view (if selected):** All stocks start at 100%, making it easy to compare percentage gains/losses
+                    - **Non-normalized view:** Shows actual stock prices, useful for comparing price levels
+                    - **Relative performance:** Stocks rising faster than others may indicate stronger company performance or sector trends
+                    - **Correlation:** Stocks moving together suggest similar market factors affecting them
+                    - **Divergence:** Stocks moving in opposite directions might indicate company-specific factors rather than market trends
+                    - **Volatility:** Stocks with larger swings may be riskier but potentially offer higher returns
+                    """)
                     
                     try:
                         buffer = io.BytesIO()
@@ -635,6 +828,24 @@ def portfolio_analysis():
                                 fig.update_layout(title="Risk/Return Profile", xaxis_title="Volatility (Risk) %", yaxis_title="Annual Return %")
                                 st.plotly_chart(fig, use_container_width=True)
                                 
+                                # Add explanations
+                                st.markdown("""
+                                **What this chart shows:** The risk-return relationship for each stock in your portfolio, plotted as volatility (risk) vs. annual return.
+                                
+                                **Key terms:**
+                                - **Annual Return (%):** The average yearly return of the stock
+                                - **Volatility (%):** How much the stock price fluctuates (standard deviation of returns)
+                                - **Sharpe Ratio:** Not directly shown but equals return divided by volatility (higher is better)
+                                
+                                **How to interpret:** 
+                                - **Top-left quadrant (low risk, high return):** Ideal investments
+                                - **Top-right quadrant (high risk, high return):** Growth or speculative investments
+                                - **Bottom-left quadrant (low risk, low return):** Conservative or defensive investments
+                                - **Bottom-right quadrant (high risk, low return):** Problematic investments to reconsider
+                                
+                                - A well-diversified portfolio typically contains a mix of investments with different risk-return profiles
+                                """)
+                                
                                 try:
                                     buffer = io.BytesIO()
                                     fig.write_image(buffer, format="png")
@@ -670,6 +881,24 @@ def portfolio_analysis():
                                 ))
                                 fig.update_layout(title="Return Correlation Heatmap", width=600, height=600)
                                 st.plotly_chart(fig, use_container_width=True)
+                                
+                                # Add explanations
+                                st.markdown("""
+                                **What this chart shows:** The correlation heatmap shows how the returns of different stocks move in relation to each other.
+                                
+                                **Key terms:**
+                                - **Correlation:** Ranges from -1 to +1
+                                - **+1 (dark blue):** Perfect positive correlation (stocks move exactly together)
+                                - **0 (white):** No correlation (stocks move independently)
+                                - **-1 (dark red):** Perfect negative correlation (stocks move exactly opposite)
+                                
+                                **How to interpret:** 
+                                - **Positive correlation (blue):** Stocks tend to move in the same direction
+                                - **Negative correlation (red):** Stocks tend to move in opposite directions
+                                - **Portfolio diversification:** Combining stocks with low or negative correlations can reduce overall portfolio risk
+                                - **Sector relationships:** Stocks in the same sector often show higher correlation
+                                - **Diversification benefit:** The more red/white areas in your heatmap, the better diversified your portfolio
+                                """)
                                 
                                 try:
                                     buffer = io.BytesIO()
