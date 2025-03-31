@@ -192,7 +192,10 @@ def get_portfolio_data(tickers, period="1y"):
 # --- Watchlist Management ---
 def initialize_watchlist():
     if "watchlist" not in st.session_state:
-        st.session_state.watchlist = ["AAPL", "MSFT"]
+        st.session_state.watchlist = ["DIS", "SBUX", "MSFT", "TSLA", "F", "AAPL", "SPYD", "SPY", "AMZN", "DHS", "SPHD", "DIV", 
+                                       "KBWD", "LCID", "PATH", "MPC", "OXY", "CMG", "META", "WDAY", "SLG", "EPD", "ET", "AMD", 
+                                       "INTC", "ON", "AXON", "LEN", "NVR", "DHI", "PANW", "QQQ", "UBER", "NVDA", "AVGO", "SMCI", 
+                                       "BLK", "PLTR", "MRP"]
 
 def add_to_watchlist(ticker):
     if ticker and ticker.upper() not in st.session_state.watchlist:
