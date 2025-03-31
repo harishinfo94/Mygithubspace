@@ -685,7 +685,7 @@ def single_stock_analysis():
 
 def portfolio_analysis():
     st.sidebar.header("Portfolio Settings")
-    default_tickers = "AAPL,MSFT,GOOG,AMZN"
+    default_tickers = "AAPL,MSFT,GOOG,AMZN,DIS,SBUX,MSFT,TSLA,F,AAPL,SPYD,SPY,AMZN,DHS,SPHD,DIV,KBWD,LCID,PATH,MPC,OXY,CMG,META,WDAY,SLG,EPD,ET,AMD,INTC,ON,AXON,LEN,NVR,DHI,PANW,QQQ,UBER,NVDA,AVGO,SMCI,BLK,PLTR,MRP"
     portfolio_tickers = st.sidebar.text_area("Enter Ticker Symbols (comma separated):", default_tickers)
     tickers = [ticker.strip().upper() for ticker in portfolio_tickers.split(",") if ticker.strip()]
     
