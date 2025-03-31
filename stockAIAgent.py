@@ -230,4 +230,136 @@ def single_stock_analysis():
                         for metric in ["Total Revenue", "Gross Profit", "Net Income"]:
                             if metric in scale_ticker.columns:
                                 fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
-                        fig.update_layout(title="Revenue and Profit Trends", xaxis_title="Date", yaxis_title="Percentage Change
+                        fig.update_layout(title="Revenue and Profit Trends", xaxis_title="Date", yaxis_title="Percentage Change")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_revenue_profit.png", "image/png")
+                        csv = scale_ticker[["Total Revenue", "Gross Profit", "Net Income"]].to_csv()
+                        st.download_button("Download Data", csv, f"{ticker}_revenue_profit.csv", "text/csv")
+                    
+                    with fin_tab2:
+                        fig = go.Figure()
+                        for metric in ["EBIT", "EBITDA"]:
+                            if metric in scale_ticker.columns:
+                                fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
+                        fig.update_layout(title="EBIT and EBITDA Trends", xaxis_title="Date", yaxis_title="Percentage Change")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_ebit_ebitda.png", "image/png")
+                    
+                    with fin_tab3:
+                        fig = go.Figure()
+                        for metric in ["Stockholders Equity", "MarketCap"]:
+                            if metric in scale_ticker.columns:
+                                fig.add_trace(go.Scatter(x=scale_ticker.index, y=scale_ticker[metric], name=metric, mode='lines+markers'))
+                        fig.update_layout(title="Equity and Market Trends", xaxis_title="Date", yaxis_title="Percentage Change")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_equity_marketcap.png", "image/png")
+                        if "Company value perception" in financials:
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=scale_ticker.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers', line=dict(color="purple")))
+                            fig.update_layout(title="Company Value Perception", xaxis_title="Date", yaxis_title="Market Cap / Equity Ratio")
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_pb_ratio.png", "image/png")
+                
+                with tab3:
+                    if show_technical and tech_data is not None:
+                        st.subheader("Technical Indicators")
+                        if "Moving Averages" in tech_indicators:
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Close'], name="Price"))
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA50'], name="MA50"))
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA200'], name="MA200"))
+                            fig.update_layout(title="Price and Moving Averages", xaxis_title="Date", yaxis_title="Price (USD)")
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_ma.png", "image/png")
+                        
+                        if "RSI" in tech_indicators:
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['RSI'], name="RSI", line=dict(color="purple")))
+                            fig.add_hline(y=70, line_dash="dash", line_color="red")
+                            fig.add_hline(y=30, line_dash="dash", line_color="green")
+                            fig.update_layout(title="Relative Strength Index (RSI)", xaxis_title="Date", yaxis_title="RSI", yaxis_range=[0, 100])
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_rsi.png", "image/png")
+                        
+                        if "MACD" in tech_indicators:
+                            fig = make_subplots(rows=2, cols=1, subplot_titles=("MACD", "Histogram"), vertical_spacing=0.1)
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MACD'], name="MACD", line=dict(color="blue")), row=1, col=1)
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Signal'], name="Signal", line=dict(color="red")), row=1, col=1)
+                            fig.add_bar(x=tech_data.index, y=tech_data['MACD_Histogram'], name="Histogram", marker_color=["green" if x >= 0 else "red" for x in tech_data['MACD_Histogram']], row=2, col=1)
+                            fig.update_layout(height=600, title_text="MACD Analysis")
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_macd.png", "image/png")
+                        
+                        if "Bollinger Bands" in tech_indicators:
+                            fig = go.Figure()
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Close'], name="Price", line=dict(color="blue")))
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['MA20'], name="MA20", line=dict(color="orange")))
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Upper_Band'], name="Upper Band", line=dict(color="green", dash="dash")))
+                            fig.add_trace(go.Scatter(x=tech_data.index, y=tech_data['Lower_Band'], name="Lower Band", line=dict(color="red", dash="dash")))
+                            fig.update_layout(title="Bollinger Bands", xaxis_title="Date", yaxis_title="Price (USD)")
+                            st.plotly_chart(fig, use_container_width=True)
+                            buffer = io.BytesIO()
+                            fig.write_image(buffer, format="png")
+                            st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_bollinger.png", "image/png")
+                
+                with tab4:
+                    if show_ratios and ratios_df is not None and not ratios_df.empty:
+                        st.subheader("Financial Ratios")
+                        fig = go.Figure()
+                        if "P/E Ratio" in ratios_df.columns:
+                            fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["P/E Ratio"], name="P/E Ratio", mode='lines+markers'))
+                        if "Company value perception" in financials:
+                            fig.add_trace(go.Scatter(x=ratios_df.index, y=financials["Company value perception"], name="P/B Ratio", mode='lines+markers'))
+                        fig.update_layout(title="Valuation Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_valuation_ratios.png", "image/png")
+                        
+                        fig = go.Figure()
+                        if "ROE (%)" in ratios_df.columns:
+                            fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["ROE (%)"], name="ROE (%)", mode='lines+markers'))
+                        if "Debt to Equity" in ratios_df.columns:
+                            fig.add_trace(go.Scatter(x=ratios_df.index, y=ratios_df["Debt to Equity"], name="Debt to Equity", mode='lines+markers'))
+                        fig.update_layout(title="Performance and Solvency Ratios", xaxis_title="Date", yaxis_title="Ratio Value")
+                        st.plotly_chart(fig, use_container_width=True)
+                        buffer = io.BytesIO()
+                        fig.write_image(buffer, format="png")
+                        st.download_button("Download Chart", buffer.getvalue(), f"{ticker}_performance_ratios.png", "image/png")
+                        csv = ratios_df.to_csv()
+                        st.download_button("Download Ratio Data", csv, f"{ticker}_ratios.csv", "text/csv")
+
+def portfolio_analysis():
+    st.sidebar.header("Portfolio Settings")
+    default_tickers = "AAPL,MSFT,GOOG,AMZN"
+    portfolio_tickers = st.sidebar.text_area("Enter Ticker Symbols (comma separated):", default_tickers)
+    tickers = [ticker.strip().upper() for ticker in portfolio_tickers.split(",") if ticker.strip()]
+    
+    period_map = {"1 Month": "1mo", "3 Months": "3mo", "6 Months": "6mo", "1 Year": "1y", "2 Years": "2y", "5 Years": "5y"}
+    time_period = st.sidebar.selectbox("Select Time Period", list(period_map.keys()), index=3)
+    period = period_map[time_period]
+    
+    st.sidebar.subheader("Analysis Options")
+    normalize_prices = st.sidebar.checkbox("Normalize Prices", True)
+    show_statistics = st.sidebar.checkbox("Show Statistics", True)
+    show_correlation = st.sidebar.checkbox("Show Correlation", True)
+    
+    if st.sidebar.button("Analyze Portfolio"):
+        with st.spinner("Analyzing portfolio..."):
+            portfolio_data = get_portfolio_data(tickers, period)
+            if portfolio_data is None or portfolio_data.empty:
+                st.error("
