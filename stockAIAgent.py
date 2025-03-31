@@ -147,6 +147,10 @@ def remove_from_watchlist(ticker):
 
 # --- Streamlit UI ---
 def main():
+    # Set page config as the first Streamlit command
+    st.set_page_config(page_title="Enhanced Stock Analyzer", page_icon="📈", layout="wide")
+    
+    # Theme handling after page config
     if "theme" not in st.session_state:
         st.session_state.theme = "light"
     
@@ -155,7 +159,6 @@ def main():
         st.session_state.theme = theme.lower()
         st.experimental_rerun()
     
-    st.set_page_config(page_title="Enhanced Stock Analyzer", page_icon="📈", layout="wide")
     if st.session_state.theme == "dark":
         st.markdown("""
             <style>
